@@ -432,6 +432,115 @@ Next.js 16 requires using `proxy.ts` instead of `middleware.ts`. Make sure you'r
 
 ## Design System
 
+### Cute & Bubbly Bubblegum Aesthetic
+
+This project follows a **cute and bubbly bubblegum design philosophy**. Every component must embody this playful, friendly, and whimsical aesthetic. **MEMORIZE AND ALWAYS APPLY THESE PRINCIPLES:**
+
+#### Core Bubblegum Design Principles
+
+1. **Soft Pastel Color Palette**
+   - Pink-tinted backgrounds (soft blush tones)
+   - Cream/warm yellow cards (like vanilla ice cream)
+   - Vibrant pink/magenta primary actions (bubblegum pink!)
+   - Soft teal/mint secondary elements
+   - Warm sunny yellow accents
+
+2. **Hard Offset "Sticker" Shadows**
+   - All shadows use a **3px offset** with **0px blur** (no soft blur!)
+   - Shadow color is **pink/magenta** (`hsl(325.78 58.18% 56.86%)`)
+   - This creates a playful "pop-out" or "sticker" effect
+   - Elements should look like they're lifted off the page like stickers
+
+3. **Rounded, Friendly Shapes**
+   - Use generous border radius (`rounded-lg`, `rounded-xl`, `rounded-full`)
+   - Avoid sharp corners - everything should feel soft and approachable
+   - Buttons and cards should look like candy or bubbles
+
+4. **Playful Typography**
+   - Poppins font is friendly, rounded, and approachable
+   - Use generous font weights (`font-semibold`, `font-bold`)
+   - Text should feel inviting, not corporate
+
+5. **Bouncy Interactions**
+   - Add `transition` to all interactive elements
+   - Use `hover:scale-105` for playful hover effects on buttons
+   - Consider `active:scale-95` for "press" feedback
+
+#### Bubblegum Component Patterns
+
+**Bubbly Primary Button:**
+```tsx
+<button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200">
+  Click Me!
+</button>
+```
+
+**Cute Card (like a sticker):**
+```tsx
+<div className="bg-card rounded-2xl shadow-lg border-2 border-border p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-200">
+  <h3 className="text-xl font-bold text-card-foreground mb-2">Cute Title</h3>
+  <p className="text-muted-foreground">Sweet description here</p>
+</div>
+```
+
+**Bubbly Input Field:**
+```tsx
+<input
+  className="w-full px-4 py-3 rounded-xl border-2 border-input bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-primary focus:shadow-md outline-none transition-all duration-200 placeholder:text-muted-foreground"
+  placeholder="Type something cute..."
+/>
+```
+
+**Playful Badge/Tag:**
+```tsx
+<span className="inline-block bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-semibold shadow-sm">
+  New!
+</span>
+```
+
+**Floating Action Button (FAB):**
+```tsx
+<button className="w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center">
+  <PlusIcon className="w-6 h-6" />
+</button>
+```
+
+**Bubbly Alert/Notice:**
+```tsx
+<div className="bg-accent/50 border-2 border-accent rounded-2xl p-4 shadow-md">
+  <p className="text-accent-foreground font-medium">Something sweet happened!</p>
+</div>
+```
+
+#### What Makes It "Bubblegum"
+
+| Element | Bubblegum Style | NOT Bubblegum |
+|---------|-----------------|---------------|
+| Shadows | Hard offset, pink, no blur | Soft gray blur shadows |
+| Colors | Pastels, pinks, yellows | Corporate blues, grays |
+| Corners | Very rounded (xl, 2xl, full) | Sharp or barely rounded |
+| Borders | Thick (2px), colorful | Thin, gray |
+| Hover | Scale up, bounce | Just color change |
+| Feel | Playful, friendly, fun | Serious, professional |
+
+#### DO's and DON'Ts for Bubblegum UI
+
+**DO:**
+- Use `rounded-xl` or `rounded-2xl` for cards
+- Add `shadow-md` or `shadow-lg` to make elements pop
+- Use `hover:scale-105` for playful interactions
+- Make buttons look like candy you want to click
+- Use thick borders (`border-2`) with colorful border colors
+- Add subtle animations with `transition-all duration-200`
+
+**DON'T:**
+- Use sharp corners
+- Use boring gray shadows
+- Make things look flat or corporate
+- Skip the playful hover effects
+- Use thin, subtle borders
+- Forget the offset shadow effect
+
 ### CSS & Styling Philosophy
 
 This project uses a **design token system** defined in `app/globals.css` with Tailwind CSS v4. Always follow these guidelines:
