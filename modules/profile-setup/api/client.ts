@@ -12,6 +12,7 @@ interface AnalyzeResponse {
   error?: string;
   isClothing?: boolean;
   detectedCategory?: ClothingCategory;
+  missingKey?: string;
 }
 
 interface UploadResponse {
@@ -85,6 +86,7 @@ export async function analyzeClothingImage(
       error: data.error || "Failed to analyze clothing",
       isClothing: data.isClothing,
       detectedCategory: data.detectedCategory,
+      missingKey: data.missingKey,
     };
   }
 

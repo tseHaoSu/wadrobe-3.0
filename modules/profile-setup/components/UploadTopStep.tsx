@@ -34,10 +34,16 @@ export function UploadTopStep() {
       const errorMessage = result.error || "Failed to analyze clothing";
       updateTopClothing({
         isAnalyzing: false,
-        error: errorMessage,
+        error: result.missingKey ? `Missing ${result.missingKey} API key` : errorMessage,
         analysis: null,
       });
-      toast.error(errorMessage);
+
+      // Show specific toast for missing API key
+      if (result.missingKey) {
+        toast.error(`Missing ${result.missingKey} API key`);
+      } else {
+        toast.error(errorMessage);
+      }
       return;
     }
 

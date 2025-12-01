@@ -19,6 +19,14 @@ export const runtime = "edge";
 
 export async function POST(request: NextRequest) {
   try {
+    // Check for required API key
+    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+      return NextResponse.json(
+        { error: "Missing GOOGLE_GENERATIVE_AI_API_KEY API key", missingKey: "GOOGLE_GENERATIVE_AI_API_KEY" },
+        { status: 500 }
+      );
+    }
+
     const session = await auth.api.getSession({
       headers: await headers(),
     });
@@ -112,6 +120,16 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error analyzing clothing:", error);
+
+    // Check for API key related errors
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (errorMessage.includes("API key") || errorMessage.includes("GOOGLE_GENERATIVE_AI_API_KEY")) {
+      return NextResponse.json(
+        { error: "Missing GOOGLE_GENERATIVE_AI_API_KEY API key", missingKey: "GOOGLE_GENERATIVE_AI_API_KEY" },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       { error: "Failed to analyze clothing image. Please try again." },
       { status: 500 }
