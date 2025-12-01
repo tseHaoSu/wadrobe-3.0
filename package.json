@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^2.0.75",
+    "@ai-sdk/google": "^2.0.44",
     "@aws-sdk/client-s3": "^3.940.0",
     "@hookform/resolvers": "^5.2.2",
     "ai": "^5.0.104",

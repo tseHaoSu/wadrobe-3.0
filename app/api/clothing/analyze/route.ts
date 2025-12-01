@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { openai } from "@ai-sdk/openai";
+import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
@@ -52,11 +52,11 @@ export async function POST(request: NextRequest) {
     // Convert file to base64
     const bytes = await file.arrayBuffer();
     const base64 = Buffer.from(bytes).toString("base64");
-    const mimeType = file.type;
+    const mimeType = file.type as "image/png" | "image/jpeg" | "image/webp" | "image/gif";
 
-    // Analyze the image using OpenAI Vision
+    // Analyze the image using Google Gemini Vision
     const result = await generateObject({
-      model: openai("gpt-4o"),
+      model: google("gemini-2.0-flash"),
       schema: clothingAnalysisSchema,
       messages: [
         {
