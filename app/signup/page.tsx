@@ -19,19 +19,20 @@ export default function SignupPage() {
     resolver: zodResolver(signupSchema),
   });
 
-  const onSubmit = async (data: SignupFormData) => {
-    try {
-      await signUp.email({
-        email: data.email,
-        password: data.password,
-        name: data.name,
-      });
+  const onSubmit = async (formData: SignupFormData) => {
+    const { error } = await signUp.email({
+      email: formData.email,
+      password: formData.password,
+      name: formData.name,
+      callbackURL: "/dashboard",
+    });
+
+    if (error) {
+      toast.error(error.message || "Failed to create account");
+      console.error(error);
+    } else {
       toast.success("Account created successfully!");
       router.push("/dashboard");
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to create account";
-      toast.error(errorMessage);
-      console.error(err);
     }
   };
 

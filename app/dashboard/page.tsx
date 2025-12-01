@@ -9,8 +9,13 @@ export default function DashboardPage() {
   const router = useRouter();
 
   const handleSignOut = async () => {
-    await signOut();
-    router.push("/login");
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/login");
+        },
+      },
+    });
   };
 
   if (isPending) {

@@ -19,17 +19,19 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: LoginFormData) => {
-    try {
-      await signIn.email({
-        email: data.email,
-        password: data.password,
-      });
+  const onSubmit = async (formData: LoginFormData) => {
+    const { error } = await signIn.email({
+      email: formData.email,
+      password: formData.password,
+      callbackURL: "/dashboard",
+    });
+
+    if (error) {
+      toast.error(error.message || "Invalid email or password");
+      console.error(error);
+    } else {
       toast.success("Successfully signed in!");
       router.push("/dashboard");
-    } catch (err) {
-      toast.error("Invalid email or password");
-      console.error(err);
     }
   };
 
