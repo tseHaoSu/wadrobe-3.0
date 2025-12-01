@@ -2,10 +2,13 @@
 
 import { useAtomValue, useSetAtom } from "jotai";
 import { toast } from "sonner";
-import { bottomClothingAtom, updateBottomClothingAtom } from "../store/atoms";
-import { analyzeClothingImage } from "../api/client";
-import { StepLayout } from "./StepLayout";
-import { ClothingDropzone, ClothingDropzoneContent } from "./ClothingDropzone";
+import {
+  bottomClothingAtom,
+  updateBottomClothingAtom,
+} from "../../store/atoms";
+import { analyzeClothingImage } from "../../api/client";
+import { StepLayout } from "../StepLayout";
+import { ClothingDropzone, ClothingDropzoneContent } from "../ClothingDropzone";
 
 export function UploadBottomStep() {
   const bottomClothing = useAtomValue(bottomClothingAtom);
@@ -34,7 +37,9 @@ export function UploadBottomStep() {
       const errorMessage = result.error || "Failed to analyze clothing";
       updateBottomClothing({
         isAnalyzing: false,
-        error: result.missingKey ? `Missing ${result.missingKey} API key` : errorMessage,
+        error: result.missingKey
+          ? `Missing ${result.missingKey} API key`
+          : errorMessage,
         analysis: null,
       });
 
@@ -73,10 +78,7 @@ export function UploadBottomStep() {
   };
 
   return (
-    <StepLayout
-      title="Upload a Bottom"
-      subtitle="Add pants, shorts, a skirt, or any lower body clothing"
-    >
+    <StepLayout title="Upload a Bottom">
       <ClothingDropzone
         file={bottomClothing.file}
         preview={bottomClothing.preview}

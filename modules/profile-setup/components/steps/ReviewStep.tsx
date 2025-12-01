@@ -2,7 +2,7 @@
 
 import { useAtomValue, useSetAtom } from "jotai";
 import { useState } from "react";
-import { Check, Sparkles, Ruler, Scale, Calendar, Palette, Shirt } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import {
   profileDataAtom,
@@ -13,9 +13,9 @@ import {
   goToPrevStepAtom,
   canGoPrevAtom,
   setupProgressAtom,
-} from "../store/atoms";
-import { DRESSING_STYLES } from "../types";
-import { uploadClothingImage, saveProfile } from "../api/client";
+} from "../../store/atoms";
+import { DRESSING_STYLES } from "../../types";
+import { uploadClothingImage, saveProfile } from "../../api/client";
 
 interface ReviewStepProps {
   onComplete: () => void;
@@ -59,18 +59,22 @@ export function ReviewStep({ onComplete }: ReviewStepProps) {
     setIsSubmitting(true);
 
     try {
-      // Upload images to Digital Ocean Spaces
+      // Upload images to Cloudflare R2 with categories
       const [topUpload, bottomUpload] = await Promise.all([
-        uploadClothingImage(topClothing.file),
-        uploadClothingImage(bottomClothing.file),
+        uploadClothingImage(topClothing.file, topClothing.analysis.category),
+        uploadClothingImage(bottomClothing.file, bottomClothing.analysis.category),
       ]);
 
       if (!topUpload.success || !topUpload.url) {
-        throw new Error(topUpload.error || "Failed to upload top clothing image");
+        throw new Error(
+          topUpload.error || "Failed to upload top clothing image"
+        );
       }
 
       if (!bottomUpload.success || !bottomUpload.url) {
-        throw new Error(bottomUpload.error || "Failed to upload bottom clothing image");
+        throw new Error(
+          bottomUpload.error || "Failed to upload bottom clothing image"
+        );
       }
 
       // Save profile and clothing data
@@ -106,7 +110,8 @@ export function ReviewStep({ onComplete }: ReviewStepProps) {
       toast.success("Profile setup complete!");
       onComplete();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Something went wrong";
+      const message =
+        error instanceof Error ? error.message : "Something went wrong";
       toast.error(message);
     } finally {
       setIsSubmitting(false);
@@ -124,76 +129,65 @@ export function ReviewStep({ onComplete }: ReviewStepProps) {
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-sm text-muted-foreground mt-2 text-center">
-            Ready to complete!
-          </p>
         </div>
 
         {/* Card */}
         <div className="bg-card rounded-2xl shadow-lg border-2 border-border p-8">
           {/* Header */}
           <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-accent rounded-full mb-4">
-              <Sparkles className="w-6 h-6 text-accent-foreground" />
-            </div>
             <h1 className="text-2xl font-bold text-card-foreground mb-2">
               Review Your Profile
             </h1>
-            <p className="text-muted-foreground">
-              Make sure everything looks good!
-            </p>
           </div>
 
           {/* Profile summary */}
           <div className="space-y-4 mb-6">
-            <div className="bg-accent/30 rounded-xl p-4">
-              <h3 className="font-semibold text-card-foreground mb-3 flex items-center gap-2">
-                <Check className="w-4 h-4 text-primary" />
+            <div className="bg-card rounded-2xl p-6 border-2 border-border shadow-[3px_3px_0px_0px_hsl(var(--primary))]">
+              <h3 className="text-lg font-bold text-card-foreground mb-4">
                 Your Details
               </h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <Ruler className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Height:</span>
-                  <span className="font-medium text-card-foreground">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-sm">
+                  <span className="font-bold text-card-foreground">
+                    Height:
+                  </span>
+                  <p className="font-semibold text-primary mt-1">
                     {profile.height} cm
-                  </span>
+                  </p>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Scale className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Weight:</span>
-                  <span className="font-medium text-card-foreground">
+                <div className="text-sm">
+                  <span className="font-bold text-card-foreground">
+                    Weight:
+                  </span>
+                  <p className="font-semibold text-primary mt-1">
                     {profile.weight} kg
-                  </span>
+                  </p>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Age:</span>
-                  <span className="font-medium text-card-foreground">
+                <div className="text-sm">
+                  <span className="font-bold text-card-foreground">Age:</span>
+                  <p className="font-semibold text-primary mt-1">
                     {profile.age} years
-                  </span>
+                  </p>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Palette className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Style:</span>
-                  <span className="font-medium text-card-foreground">
+                <div className="text-sm">
+                  <span className="font-bold text-card-foreground">Style:</span>
+                  <p className="font-semibold text-primary mt-1">
                     {styleLabel}
-                  </span>
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Clothing items */}
-            <div className="bg-accent/30 rounded-xl p-4">
-              <h3 className="font-semibold text-card-foreground mb-3 flex items-center gap-2">
-                <Shirt className="w-4 h-4 text-primary" />
+            <div className="bg-card rounded-2xl p-6 border-2 border-border shadow-[3px_3px_0px_0px_hsl(var(--primary))]">
+              <h3 className="text-lg font-bold text-card-foreground mb-4">
                 Your Clothing
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {/* Top */}
                 {topClothing.preview && topClothing.analysis && (
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-muted shrink-0 border-2 border-border">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={topClothing.preview}
@@ -202,10 +196,10 @@ export function ReviewStep({ onComplete }: ReviewStepProps) {
                       />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-card-foreground text-sm truncate">
+                      <p className="font-bold text-card-foreground truncate">
                         {topClothing.analysis.name}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm font-semibold text-muted-foreground mt-1">
                         {topClothing.analysis.color}
                         {topClothing.analysis.brand
                           ? ` • ${topClothing.analysis.brand}`
@@ -217,7 +211,7 @@ export function ReviewStep({ onComplete }: ReviewStepProps) {
                 {/* Bottom */}
                 {bottomClothing.preview && bottomClothing.analysis && (
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-muted shrink-0 border-2 border-border">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={bottomClothing.preview}
@@ -226,10 +220,10 @@ export function ReviewStep({ onComplete }: ReviewStepProps) {
                       />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-card-foreground text-sm truncate">
+                      <p className="font-bold text-card-foreground truncate">
                         {bottomClothing.analysis.name}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm font-semibold text-muted-foreground mt-1">
                         {bottomClothing.analysis.color}
                         {bottomClothing.analysis.brand
                           ? ` • ${bottomClothing.analysis.brand}`

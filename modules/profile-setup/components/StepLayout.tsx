@@ -1,7 +1,8 @@
 "use client";
 
 import { useAtomValue, useSetAtom } from "jotai";
-import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import {
   canGoNextAtom,
   canGoPrevAtom,
@@ -12,7 +13,7 @@ import {
 
 interface StepLayoutProps {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   children: React.ReactNode;
   showNavigation?: boolean;
   nextLabel?: string;
@@ -47,37 +48,65 @@ export function StepLayout({
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Progress bar */}
-        <div className="mb-8">
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
           <div className="h-2 bg-muted rounded-full overflow-hidden">
-            <div
-              className="h-full bg-primary transition-all duration-500 ease-out rounded-full"
-              style={{ width: `${progress}%` }}
+            <motion.div
+              className="h-full bg-primary rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
             />
           </div>
-          <p className="text-sm text-muted-foreground mt-2 text-center">
-            {Math.round(progress)}% complete
-          </p>
-        </div>
+        </motion.div>
 
         {/* Card */}
-        <div className="bg-card rounded-2xl shadow-lg border-2 border-border p-8">
+        <motion.div
+          className="bg-card rounded-2xl shadow-lg border-2 border-border p-8"
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -100 }}
+          transition={{
+            duration: 0.4,
+            ease: [0.4, 0.0, 0.2, 1],
+          }}
+        >
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-accent rounded-full mb-4">
-              <Sparkles className="w-6 h-6 text-accent-foreground" />
-            </div>
+          <motion.div
+            className="text-center mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.3 }}
+          >
+            
             <h1 className="text-2xl font-bold text-card-foreground mb-2">
               {title}
             </h1>
-            <p className="text-muted-foreground">{subtitle}</p>
-          </div>
+            {subtitle && <p className="text-muted-foreground">{subtitle}</p>}
+          </motion.div>
 
           {/* Content */}
-          <div className="mb-8">{children}</div>
+          <motion.div
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.3 }}
+          >
+            {children}
+          </motion.div>
 
           {/* Navigation */}
           {showNavigation && (
-            <div className="flex gap-4">
+            <motion.div
+              className="flex gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.3 }}
+            >
               {canGoPrev && (
                 <button
                   type="button"
@@ -93,7 +122,7 @@ export function StepLayout({
                 type="button"
                 onClick={handleNext}
                 disabled={!canGoNext || isLoading}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-md transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-sm transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
                 {isLoading ? (
                   <>
@@ -107,9 +136,9 @@ export function StepLayout({
                   </>
                 )}
               </button>
-            </div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
       </div>
     </div>
   );

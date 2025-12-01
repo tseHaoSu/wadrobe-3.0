@@ -1,15 +1,17 @@
 // Components
 export { ProfileSetup } from "./components/ProfileSetup";
 export { StepLayout } from "./components/StepLayout";
-export { HeightStep } from "./components/HeightStep";
-export { WeightStep } from "./components/WeightStep";
-export { AgeStep } from "./components/AgeStep";
-export { DressingStyleStep } from "./components/DressingStyleStep";
-export { UploadTopStep } from "./components/UploadTopStep";
-export { UploadBottomStep } from "./components/UploadBottomStep";
-export { ReviewStep } from "./components/ReviewStep";
-export { ClothingDropzone, ClothingDropzoneContent } from "./components/ClothingDropzone";
-export { DashboardContent } from "./components/DashboardContent";
+export { HeightStep } from "./components/steps/HeightStep";
+export { WeightStep } from "./components/steps/WeightStep";
+export { AgeStep } from "./components/steps/AgeStep";
+export { DressingStyleStep } from "./components/steps/DressingStyleStep";
+export { UploadTopStep } from "./components/steps/UploadTopStep";
+export { UploadBottomStep } from "./components/steps/UploadBottomStep";
+export { ReviewStep } from "./components/steps/ReviewStep";
+export {
+  ClothingDropzone,
+  ClothingDropzoneContent,
+} from "./components/ClothingDropzone";
 
 // Store
 export * from "./store/atoms";

@@ -1,9 +1,10 @@
 "use client";
 
-import { UploadIcon, X, Loader2, Check, AlertCircle } from "lucide-react";
+import { X, Check } from "lucide-react";
 import type { ReactNode } from "react";
 import { createContext, useContext, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import { Badge } from "@/components/ui/badge";
 import type { ClothingAnalysis } from "../types";
 
 interface ClothingDropzoneContextType {
@@ -114,11 +115,8 @@ export function ClothingDropzoneContent() {
   if (isAnalyzing) {
     return (
       <div className="flex flex-col items-center justify-center p-8 min-h-[200px]">
-        <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4" />
         <p className="font-semibold text-card-foreground">Analyzing your clothing...</p>
-        <p className="text-sm text-muted-foreground mt-1">
-          Our AI is identifying your item
-        </p>
       </div>
     );
   }
@@ -126,9 +124,6 @@ export function ClothingDropzoneContent() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center p-8 min-h-[200px]">
-        <div className="w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
-          <AlertCircle className="w-6 h-6 text-destructive" />
-        </div>
         <p className="font-semibold text-destructive text-center">{error}</p>
         <p className="text-sm text-muted-foreground mt-2">
           Click or drag to try again
@@ -164,13 +159,19 @@ export function ClothingDropzoneContent() {
               {analysis.description}
             </p>
             <div className="flex flex-wrap gap-2">
-              <span className="inline-block bg-accent text-accent-foreground px-2 py-0.5 rounded-full text-xs font-medium">
+              <Badge
+                variant="secondary"
+                className="px-2 py-0.5 text-xs font-medium rounded-full border-2 border-border shadow-[2px_2px_0px_0px_hsl(var(--primary))] transition-all"
+              >
                 {analysis.color}
-              </span>
+              </Badge>
               {analysis.brand && (
-                <span className="inline-block bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full text-xs font-medium">
+                <Badge
+                  variant="secondary"
+                  className="px-2 py-0.5 text-xs font-medium rounded-full border-2 border-border shadow-[2px_2px_0px_0px_hsl(var(--primary))] transition-all"
+                >
                   {analysis.brand}
-                </span>
+                </Badge>
               )}
             </div>
           </div>
@@ -181,14 +182,11 @@ export function ClothingDropzoneContent() {
 
   return (
     <div className="flex flex-col items-center justify-center p-8 min-h-[200px]">
-      <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center mb-4">
-        <UploadIcon className="w-6 h-6 text-accent-foreground" />
-      </div>
       <p className="font-semibold text-card-foreground">
-        Drag and drop your clothing image
+        Upload your clothing image
       </p>
       <p className="text-sm text-muted-foreground mt-1">
-        or click to browse
+        Click or drag to upload
       </p>
       <p className="text-xs text-muted-foreground mt-3">
         PNG or JPG, max 10MB

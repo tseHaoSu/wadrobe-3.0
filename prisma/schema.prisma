@@ -46,6 +46,7 @@ model UserProfile {
   weight        Float?        // Weight in kg
   age           Int?
   dressingStyle DressingStyle @default(CASUAL)
+  profilePic    String?       // Profile picture URL (compressed)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 

@@ -1,32 +1,46 @@
 "use client";
 
 import { useSession } from "@/lib/auth-client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Provider } from "jotai";
 import { ProfileSetup, checkUserProfile } from "@/modules/profile-setup";
-import { DashboardContent } from "@/modules/profile-setup/components/DashboardContent";
+import { DashboardContent } from "@/modules/dashboard";
+import { AudioPlayer } from "@/components/AudioPlayer";
 
 type ProfileStatus = "loading" | "needs-setup" | "complete";
 
 export default function DashboardPage() {
   const { data: session, isPending } = useSession();
+  const router = useRouter();
   const [profileStatus, setProfileStatus] = useState<ProfileStatus>("loading");
 
-  const fetchProfileStatus = useCallback(async () => {
-    try {
-      const result = await checkUserProfile();
-      setProfileStatus(result.hasProfile ? "complete" : "needs-setup");
-    } catch {
-      // If we can't check, assume we need setup
-      setProfileStatus("needs-setup");
-    }
-  }, []);
-
   useEffect(() => {
-    if (session?.user?.id) {
-      fetchProfileStatus();
-    }
-  }, [session?.user?.id, fetchProfileStatus]);
+    if (!session?.user?.id) return;
+
+    let isMounted = true;
+
+    const fetchProfileStatus = async () => {
+      try {
+        const result = await checkUserProfile();
+        if (isMounted) {
+          setProfileStatus(result.hasProfile ? "complete" : "needs-setup");
+        }
+      } catch (error) {
+        console.error("Profile check error:", error);
+        // If profile check fails, user might not exist - redirect to home
+        if (isMounted) {
+          router.push("/");
+        }
+      }
+    };
+
+    fetchProfileStatus();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [session?.user?.id, router]);
 
   const handleSetupComplete = () => {
     setProfileStatus("complete");
@@ -54,15 +68,16 @@ export default function DashboardPage() {
     return (
       <Provider>
         <ProfileSetup onComplete={handleSetupComplete} />
+        <AudioPlayer />
       </Provider>
     );
   }
 
   // Profile complete - show dashboard
   return (
-    <DashboardContent
-      userName={session.user?.name}
-      userEmail={session.user?.email}
-    />
+    <>
+      <DashboardContent />
+      <AudioPlayer />
+    </>
   );
 }

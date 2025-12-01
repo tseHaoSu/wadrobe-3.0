@@ -58,7 +58,9 @@ export async function checkUserProfile(): Promise<ProfileCheckResponse> {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to check profile");
+    const data = await response.json().catch(() => ({}));
+    const errorMessage = data.error || "Failed to check profile";
+    throw new Error(errorMessage);
   }
 
   return response.json();
@@ -66,7 +68,7 @@ export async function checkUserProfile(): Promise<ProfileCheckResponse> {
 
 export async function analyzeClothingImage(
   file: File,
-  expectedCategory: "TOP" | "BOTTOM"
+  expectedCategory: "HEAD" | "TOP" | "BOTTOM"
 ): Promise<AnalyzeResponse> {
   const formData = new FormData();
   formData.append("image", file);
@@ -96,9 +98,42 @@ export async function analyzeClothingImage(
   };
 }
 
-export async function uploadClothingImage(file: File): Promise<UploadResponse> {
+export async function uploadClothingImage(
+  file: File,
+  category?: ClothingCategory
+): Promise<UploadResponse> {
   const formData = new FormData();
   formData.append("image", file);
+  formData.append("type", "clothing");
+  if (category) {
+    formData.append("category", category);
+  }
+
+  const response = await fetch("/api/upload", {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    return {
+      success: false,
+      error: data.error || "Failed to upload image",
+    };
+  }
+
+  return {
+    success: true,
+    url: data.url,
+  };
+}
+
+export async function uploadProfileImage(file: File): Promise<UploadResponse> {
+  const formData = new FormData();
+  formData.append("image", file);
+  formData.append("type", "profile");
 
   const response = await fetch("/api/upload", {
     method: "POST",

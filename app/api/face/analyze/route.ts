@@ -5,14 +5,11 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
-// Schema for clothing analysis response
-const clothingAnalysisSchema = z.object({
-  isClothing: z.boolean().describe("Whether the image contains a clothing item"),
-  name: z.string().describe("Short name of the clothing item, e.g., 'Black Hoodie', 'Blue Jeans'"),
-  description: z.string().describe("Brief description of the clothing item"),
-  category: z.enum(["HEAD", "TOP", "BOTTOM"]).describe("Category of the clothing: HEAD for hats/caps, TOP for shirts/jackets/hoodies, BOTTOM for pants/shorts/skirts"),
-  color: z.string().describe("Primary color of the clothing item"),
-  brand: z.string().nullable().describe("Brand name if visible, otherwise null"),
+// Schema for face verification response
+const faceAnalysisSchema = z.object({
+  isFace: z.boolean().describe("Whether the image contains a clear human face"),
+  quality: z.enum(["good", "acceptable", "poor"]).describe("Quality of the face photo for profile purposes"),
+  issues: z.array(z.string()).describe("List of any issues (e.g., 'blurry', 'too dark', 'multiple faces', 'face not centered')"),
 });
 
 export async function POST(request: NextRequest) {
@@ -38,7 +35,6 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const file = formData.get("image") as File | null;
-    const expectedCategory = formData.get("expectedCategory") as string | null;
 
     if (!file) {
       return NextResponse.json(
@@ -63,7 +59,7 @@ export async function POST(request: NextRequest) {
     // Analyze the image using Google Gemini Vision
     const result = await generateObject({
       model: google("gemini-2.0-flash"),
-      schema: clothingAnalysisSchema,
+      schema: faceAnalysisSchema,
       messages: [
         {
           role: "user",
@@ -74,7 +70,14 @@ export async function POST(request: NextRequest) {
             },
             {
               type: "text",
-              text: `Analyze this image and determine if it contains a clothing item. If it does, provide details about the clothing including its name, description, category (HEAD for hats/caps/beanies, TOP for shirts/jackets/hoodies/sweaters, BOTTOM for pants/shorts/skirts), color, and brand if visible. If the image does not contain a clear clothing item, set isClothing to false.${expectedCategory ? ` The user expects this to be a ${expectedCategory} item.` : ""}`,
+              text: `Analyze this image to verify it's suitable for a profile picture. Check if:
+1. It contains a clear human face
+2. The face is centered and visible
+3. The quality is good (not blurry, well-lit, not too dark)
+4. There's only one face in the image
+5. The face is not obscured
+
+Provide your assessment including whether it's a suitable face photo, the quality level, and any issues you notice.`,
             },
           ],
         },
@@ -83,24 +86,26 @@ export async function POST(request: NextRequest) {
 
     const analysis = result.object;
 
-    // Check if it's actually clothing
-    if (!analysis.isClothing) {
+    // Check if it's actually a face
+    if (!analysis.isFace) {
       return NextResponse.json(
         {
-          error: "This doesn't appear to be a clothing item. Please upload a clear image of clothing.",
-          isClothing: false
+          error: "This doesn't appear to contain a clear face. Please upload a photo of yourself.",
+          isFace: false,
+          issues: analysis.issues
         },
         { status: 400 }
       );
     }
 
-    // If expected category is provided, validate it matches
-    if (expectedCategory && analysis.category !== expectedCategory) {
+    // Check quality
+    if (analysis.quality === "poor") {
       return NextResponse.json(
         {
-          error: `This appears to be a ${analysis.category.toLowerCase()} item, but we need a ${expectedCategory.toLowerCase()} item. Please upload the correct type of clothing.`,
-          isClothing: true,
-          detectedCategory: analysis.category
+          error: `Photo quality is too low. Issues: ${analysis.issues.join(", ")}. Please upload a clearer photo.`,
+          isFace: true,
+          quality: analysis.quality,
+          issues: analysis.issues
         },
         { status: 400 }
       );
@@ -109,15 +114,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       analysis: {
-        name: analysis.name,
-        description: analysis.description,
-        category: analysis.category,
-        color: analysis.color,
-        brand: analysis.brand,
+        isFace: analysis.isFace,
+        quality: analysis.quality,
+        issues: analysis.issues,
       },
     });
   } catch (error) {
-    console.error("Error analyzing clothing:", error);
+    console.error("Error analyzing face:", error);
 
     // Check for API key related errors
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -129,7 +132,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: "Failed to analyze clothing image. Please try again." },
+      { error: "Failed to analyze face image. Please try again." },
       { status: 500 }
     );
   }

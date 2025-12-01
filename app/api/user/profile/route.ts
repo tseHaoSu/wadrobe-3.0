@@ -51,6 +51,18 @@ export async function GET() {
       );
     }
 
+    // Check if user exists
+    const user = await db.user.findUnique({
+      where: { id: session.user.id },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not found", shouldClearSession: true },
+        { status: 404 }
+      );
+    }
+
     const profile = await db.userProfile.findUnique({
       where: { userId: session.user.id },
     });
@@ -192,3 +204,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+

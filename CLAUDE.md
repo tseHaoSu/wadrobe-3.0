@@ -372,12 +372,42 @@ pnpm prisma studio
 | `BETTER_AUTH_SECRET` | Secret key for session encryption | Generate using `openssl rand -base64 32` |
 | `DATABASE_URL` | Neon pooled connection string | `postgresql://user:pass@host-pooler.neon.tech/db` |
 | `DIRECT_URL` | Neon direct connection string | `postgresql://user:pass@host.neon.tech/db` |
+| `R2_ACCOUNT_ID` | Cloudflare R2 account ID | `your-account-id` |
+| `R2_ACCESS_KEY_ID` | Cloudflare R2 access key | `your-access-key` |
+| `R2_SECRET_ACCESS_KEY` | Cloudflare R2 secret key | `your-secret-key` |
+| `R2_BUCKET_NAME` | Cloudflare R2 bucket name | `wardrobe-images` |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Google Gemini API key for clothing/face analysis | `your-gemini-key` |
 
 ### Optional Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `NEXT_PUBLIC_APP_URL` | Public app URL for client-side | `http://localhost:3000` |
+| `NEXT_PUBLIC_R2_PUBLIC_URL` | Public URL for R2 bucket (custom domain) | Auto-generated from R2 settings |
+| `GEMINI_IMAGE_API_KEY` | Dedicated API key for AI outfit generation | Falls back to `GOOGLE_GENERATIVE_AI_API_KEY` |
+
+### AI Outfit Generation
+
+**IMPORTANT NOTE**: Google Gemini models (as of January 2025) can analyze images but **cannot generate images**.
+
+For true AI outfit generation, you would need to integrate one of these services:
+
+1. **Stable Diffusion** - Open source, can be self-hosted or use APIs like:
+   - Stability AI API
+   - Replicate.com
+   - RunPod
+
+2. **DALL-E 3** (OpenAI) - Requires OpenAI API key with image generation access
+
+3. **Midjourney** - Via unofficial API or Discord bot
+
+The current implementation attempts to use Gemini for image generation but will fail. To enable this feature:
+
+- Comment out or remove the outfit generation route (`/app/api/outfit/generate/route.ts`)
+- Or implement a proper image generation service using one of the options above
+- Update `GEMINI_IMAGE_API_KEY` documentation to match your chosen service
+
+**Recommended**: Use Stability AI or Replicate for production-ready outfit generation.
 
 ## Better Auth Features
 
@@ -840,3 +870,4 @@ Private project - All rights reserved
 
 **Last Updated**: December 1, 2025
 **Version**: 0.1.0
+- use nextjs Link instead of windows of href for redirects

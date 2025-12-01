@@ -2,9 +2,9 @@
 
 import { useAtomValue, useSetAtom } from "jotai";
 import { Check } from "lucide-react";
-import { profileDataAtom, updateProfileAtom } from "../store/atoms";
-import { DRESSING_STYLES, type DressingStyle } from "../types";
-import { StepLayout } from "./StepLayout";
+import { profileDataAtom, updateProfileAtom } from "../../store/atoms";
+import { DRESSING_STYLES, type DressingStyle } from "../../types";
+import { StepLayout } from "../StepLayout";
 
 export function DressingStyleStep() {
   const profile = useAtomValue(profileDataAtom);
@@ -15,10 +15,7 @@ export function DressingStyleStep() {
   };
 
   return (
-    <StepLayout
-      title="What's your style?"
-      subtitle="Pick the aesthetic that best describes you"
-    >
+    <StepLayout title="What's your style?">
       <div className="space-y-3">
         {DRESSING_STYLES.map((style) => {
           const isSelected = profile.dressingStyle === style.value;
@@ -38,9 +35,6 @@ export function DressingStyleStep() {
                   <h3 className="font-semibold text-card-foreground">
                     {style.label}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {style.description}
-                  </p>
                 </div>
                 {isSelected && (
                   <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">

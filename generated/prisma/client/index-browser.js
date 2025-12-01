@@ -131,6 +131,31 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.UserProfileScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  height: 'height',
+  weight: 'weight',
+  age: 'age',
+  dressingStyle: 'dressingStyle',
+  profilePic: 'profilePic',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClothingScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  description: 'description',
+  category: 'category',
+  imageUrl: 'imageUrl',
+  color: 'color',
+  brand: 'brand',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.AccountScalarFieldEnum = {
   id: 'id',
   accountId: 'accountId',
@@ -182,10 +207,24 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.DressingStyle = exports.$Enums.DressingStyle = {
+  CASUAL: 'CASUAL',
+  FORMAL: 'FORMAL',
+  SPORTY: 'SPORTY',
+  STREETWEAR: 'STREETWEAR',
+  MINIMALIST: 'MINIMALIST'
+};
 
+exports.ClothingCategory = exports.$Enums.ClothingCategory = {
+  HEAD: 'HEAD',
+  TOP: 'TOP',
+  BOTTOM: 'BOTTOM'
+};
 
 exports.Prisma.ModelName = {
   User: 'User',
+  UserProfile: 'UserProfile',
+  Clothing: 'Clothing',
   Account: 'Account',
   Session: 'Session',
   Verification: 'Verification'

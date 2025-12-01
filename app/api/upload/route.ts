@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { uploadToSpaces } from "@/lib/storage";
+import { uploadToSpaces, ClothingCategory, UploadType } from "@/lib/storage";
 import { headers } from "next/headers";
 
 export async function POST(request: NextRequest) {
@@ -18,6 +18,8 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const file = formData.get("image") as File | null;
+    const type = (formData.get("type") as UploadType) || "clothing";
+    const category = formData.get("category") as ClothingCategory | null;
 
     if (!file) {
       return NextResponse.json(
@@ -44,16 +46,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate category for clothing uploads
+    if (type === "clothing" && !category) {
+      return NextResponse.json(
+        { error: "Category is required for clothing uploads" },
+        { status: 400 }
+      );
+    }
+
     // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Upload to Digital Ocean Spaces
+    // Upload to Cloudflare R2
     const result = await uploadToSpaces(
       buffer,
       file.name,
       file.type,
-      session.user.id
+      session.user.id,
+      type,
+      category || undefined
     );
 
     if (!result.success) {
